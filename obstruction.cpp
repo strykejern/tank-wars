@@ -18,7 +18,5 @@ class obstruction : virtual public top_view_object, virtual public angular {
 				(pos + rot_points[(i==length-1)?0:i+1]).y,
 				makecol(0, 255, 0));
 		}
-		for (int i = 0; i < length; i++)
-			textprintf_ex(buffer, font, 10, 10+(20*i), makecol(0, 255, 0), -1, "%f, %f", rot_points[i].x, rot_points[i].y);
 	}
 };
