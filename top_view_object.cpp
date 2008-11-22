@@ -9,6 +9,7 @@ class top_view_object : virtual public basic_game_object {
 		length = Length;
 	}
 	top_view_object() {
+		length = 0;
 	}
 	
 	virtual void draw_bounding_box(BITMAP * buffer) {
