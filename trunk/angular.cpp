@@ -9,6 +9,14 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	angular() {
 		angle = 0;
 		angles = new float[length];
+		if (length != 0)update_angles();
+	}
+	
+	/*~angular() {
+		delete [] angles;
+	}*/
+	
+	void update_angles() {
 		for (int i = 0; i < length; ++i) {
 			angles[i] = points[i].angle();
 		}

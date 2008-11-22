@@ -1,8 +1,12 @@
 #include <allegro.h>
 #include <vector>
 #include "vector.cpp"
-#include "tanks.cpp"
+#include "basic_physics_object.cpp"
+#include "top_view_object.cpp"
+#include "angular.cpp"
+#include "cannon.cpp"
 #include "obstruction.cpp"
+#include "tanks.cpp"
 #include "tanks_game.cpp"
 
 #define SCREEN_X 640
@@ -66,12 +70,11 @@ int main() {
     for (int i = 0; i < 5; ++i) {
     	Vector tmp_points[] = {
     		Vector(-10,  15),
-    		Vector(  0,  15),
     		Vector( 10,  15),
 			Vector( 10, -15),
 			Vector(-10, -15)
 		};
-    	game.add_obstruction(Vector(rand()%600, rand()%400), tmp_points, 5);
+    	game.add_obstruction(Vector(rand()%600, rand()%400), tmp_points, 4);
 	}
     
     while (!key[KEY_ESC]) {

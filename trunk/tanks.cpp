@@ -1,7 +1,3 @@
-#include "basic_physics_object.cpp"
-#include "top_view_object.cpp"
-#include "angular.cpp"
-
 #define SCREEN_X 640
 #define SCREEN_Y 480
 
@@ -13,6 +9,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	float ROT_DEC;
 	int last_rot;
 	volatile char * input[4];
+	std::vector<cannon> cannons;
 	
 	tank(Vector Pos, Vector * Points, int Length) : top_view_object(Pos,Points, Length) {
 		ACCEL = 0.2f;
@@ -22,6 +19,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		volatile char dummy;
 		for (int i = 0; i < 4; ++i)
 			input[i] = &dummy;
+		cannons.push_back(cannon());
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -38,6 +36,9 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 				(pos + rot_points[(i==length-1)?0:i+1]).y,
 				makecol(255, 0, 0));
 		}
+		for (int i = 0; i < (int)cannons.size(); ++i)
+			cannons[i].draw_bounding_box(buffer);
+		
 	}
 	
 	void update() {
@@ -70,6 +71,14 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 			speed.set_length(MAX_SPEED);
 		move();
 		border_collide();
+		update_cannon();
+	}
+	
+	void update_cannon() {
+		for (int i = 0; i < (int)cannons.size(); ++i) {
+			cannons[i].pos = pos;
+			cannons[i].angle += last_rot * HANDLING;
+		}
 	}
 	
 	void set_inputs(volatile char * drive, volatile char * reverse, volatile char * turn_left, volatile char * turn_right) {
