@@ -58,6 +58,8 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 			accel = Vector(ACCEL, angle, 0);
 		else if ((bool)*input[1])
 			accel = -Vector(ACCEL, angle, 0);
+		else if (accel.length() > 0.5f)
+			accel.set_length(accel.length() - 0.01f);
 		else {
 			accel = Vector();
 			speed = Vector();

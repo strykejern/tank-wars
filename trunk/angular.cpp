@@ -15,9 +15,9 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	}
 	
 	Vector * ang_points() {
-		static Vector * tmp_points = points;
+		static Vector * tmp_points = new Vector[length];
 		for (int i = 0; i < length; ++i) {
-			tmp_points[i].rotate_to(angle + angles[i]);
+			tmp_points[i] = points[i].rotated_cp(angle + angles[i]);
 		}
 		return tmp_points;
 	}

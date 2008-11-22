@@ -63,15 +63,16 @@ int main() {
     
     game.set_collision_vectors(collision_vectors);
     
-    //for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 5; ++i) {
     	Vector tmp_points[] = {
-    		Vector(-10,  150),
-    		Vector( 10,  150),
-			Vector( 10, -150),
-			Vector(-10, -150)
+    		Vector(-10,  15),
+    		Vector(  0,  15),
+    		Vector( 10,  15),
+			Vector( 10, -15),
+			Vector(-10, -15)
 		};
-    	game.add_obstruction(Vector(100, 100), tmp_points, 4);
-	//}
+    	game.add_obstruction(Vector(rand()%600, rand()%400), tmp_points, 5);
+	}
     
     while (!key[KEY_ESC]) {
         while (speed_counter > 0) {
