@@ -11,7 +11,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	volatile char * input[4];
 	std::vector<cannon> cannons;
 	
-	tank(Vector Pos, Vector * Points, int Length) : top_view_object(Pos,Points, Length) {
+	tank(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos,Points) {
 		ACCEL = 0.2f;
 		MAX_SPEED = 10;
 		HANDLING = 0.1f;
@@ -27,7 +27,8 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {
-		Vector * rot_points = ang_points();
+		int length = (int)points.size();
+		std::vector<Vector> rot_points = ang_points();
 		for (int i = 0; i < length; ++i) {
 			line(buffer,
 				(pos + rot_points[i]).x,
@@ -86,5 +87,16 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		input[1] = reverse;
 		input[2] = turn_left;
 		input[3] = turn_right;
+	}
+	
+	void collide_drive() {
+		pos -= speed;
+		speed = Vector();
+	}
+	
+	void collide_rotate() {
+		angle -= last_rot * HANDLING;
+		last_rot = -last_rot;
+		update_cannon();
 	}
 };

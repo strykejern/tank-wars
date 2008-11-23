@@ -1,40 +1,62 @@
+#include <list>
+
 #define SCREEN_X 640
 #define SCREEN_Y 480
+struct angle_vector {
+	float angle;
+	float length;
+	angle_vector(float Angle, float Length) {
+		angle = Angle;
+		length = Length;
+	}
+};
+
+	bool less_than(angle_vector av1, angle_vector av2) {
+		return av1.angle < av2.angle;
+	}
 
 class angular : virtual public top_view_object, virtual public basic_physics_object {
 	public:
 	float angle;
-	float * angles;
+	std::vector<float> angles;
+	std::vector<float> lengths;
 	
 	angular() {
 		angle = 0;
-		angles = new float[length];
-		if (length != 0)update_angles();
+		update_angles();
 	}
 	
-	/*~angular() {
-		delete [] angles;
-	}*/
-	
 	void update_angles() {
+		angles.clear();
+		lengths.clear();
+		int length = (int)points.size();
+		std::list<angle_vector> tmp_list;
 		for (int i = 0; i < length; ++i) {
-			angles[i] = points[i].angle();
+			tmp_list.push_back(angle_vector(points[i].angle(), points[i].length()));
+		}
+		tmp_list.sort(less_than);
+		std::list<angle_vector>::iterator av;
+		for (av = tmp_list.begin(); av != tmp_list.end(); ++av) {
+			angles.push_back(av->angle);
+			lengths.push_back(av->length);
 		}
 	}
 	
-	Vector * ang_points() {
-		static Vector * tmp_points = new Vector[length];
+	std::vector<Vector> ang_points() {
+		int length = (int)points.size();
+		std::vector<Vector> tmp_points ;
 		for (int i = 0; i < length; ++i) {
-			tmp_points[i] = points[i].rotated_cp(angle + angles[i]);
+			tmp_points.push_back(Vector(lengths[i], angle + angles[i], 0));
 		}
 		return tmp_points;
 	}
 	
-	float * project_to(Vector v) {
-		Vector * rot_points = ang_points();
-		static float border[2];
-		border[0] = (pos + rot_points[0]) * v;
-		border[1] = (pos + rot_points[0]) * v;
+	std::vector<float> project_to(Vector v) {
+		int length = (int)points.size();
+		std::vector<Vector> rot_points = ang_points();
+		std::vector<float> border;
+		border.push_back((pos + rot_points[0]) * v);
+		border.push_back((pos + rot_points[0]) * v);
 		for (int i = 1; i < length; ++i) {
 			float tmp = (pos + rot_points[i]) * v;
 			if (tmp < border[0]) border[0] = tmp;
@@ -44,10 +66,11 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	}
 	
 	void border_collide() {
-		Vector * rot_points = ang_points();
-		Vector abs_points[length];
+		int length = (int)points.size();
+		std::vector<Vector> rot_points = ang_points();
+		std::vector<Vector> abs_points;
 		for (int i = 0; i < length; ++i) {
-			abs_points[i] = pos + rot_points[i];
+			abs_points.push_back(pos + rot_points[i]);
 		}
 		
 		for (int i = 0; i < length; ++i) {

@@ -6,6 +6,7 @@ class Vector {
 	
 	Vector() { x=0; y=0; }
 	Vector(float X, float Y) { x=X; y=Y; }
+	Vector(int X, int Y) { x=(float)X; y=(float)Y; }
 	Vector(float length, float angle, int dummy) {
 		x = cos(angle) * length;
 		y = sin(angle) * length;
