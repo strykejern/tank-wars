@@ -12,6 +12,11 @@ class tanks_game {
 	void add_tank(Vector pos, std::vector<Vector> points) {
 		tanks.push_back(tank(pos, points));
 	}
+	
+	void add_tank(tank tank1) {
+		tanks.push_back(tank1);
+	}
+	
 	void add_obstruction(Vector pos, std::vector<Vector> points) {
 		obstructions.push_back(obstruction(pos, points));
 	}
@@ -40,7 +45,7 @@ class tanks_game {
 	
 	bool collision_check(angular tank1, angular tank2) {
 		int overlaps = 0;
-		for (int i = 0; i < 9; ++i) {
+		for (int i = 0; i < (int)collision_vectors.size(); ++i) {
 			std::vector<float> tmp1 = tank1.project_to(collision_vectors[i]);
 			std::vector<float> tmp2 = tank2.project_to(collision_vectors[i]);
 			if (between(tmp1[0], tmp2[0], tmp2[1]) ||
@@ -49,7 +54,7 @@ class tanks_game {
 				between(tmp2[1], tmp1[0], tmp1[1]))
 					overlaps++;
 		}
-		if (overlaps == 9)
+		if (overlaps == (int)collision_vectors.size())
 			return true;
 		return false;
 	}

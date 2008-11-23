@@ -42,6 +42,11 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 		}
 	}
 	
+	void add_point(Vector pnt) {
+		points.push_back(pnt);
+		update_angles();
+	}
+	
 	std::vector<Vector> ang_points() {
 		int length = (int)points.size();
 		std::vector<Vector> tmp_points ;
