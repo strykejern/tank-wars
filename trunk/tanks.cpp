@@ -21,6 +21,16 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 			input[i] = &dummy;
 		cannons.push_back(cannon());
 	}
+	tank() {
+		ACCEL = 0.2f;
+		MAX_SPEED = 10;
+		HANDLING = 0.1f;
+		ROT_DEC = 0.95f;
+		volatile char dummy;
+		for (int i = 0; i < 4; ++i)
+			input[i] = &dummy;
+		cannons.push_back(cannon());
+	}
 	
 	void draw(BITMAP * buffer) {
 		
@@ -36,7 +46,16 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 				(pos + rot_points[(i==length-1)?0:i+1]).x,
 				(pos + rot_points[(i==length-1)?0:i+1]).y,
 				makecol(255, 0, 0));
+			triangle(buffer,
+				(pos + rot_points[i]).x,
+				(pos + rot_points[i]).y,
+				(pos + rot_points[(i==length-1)?0:i+1]).x,
+				(pos + rot_points[(i==length-1)?0:i+1]).y,
+				pos.x,
+				pos.y,
+				makecol(255, 0, 0));
 		}
+		
 		for (int i = 0; i < (int)cannons.size(); ++i)
 			cannons[i].draw_bounding_box(buffer);
 		

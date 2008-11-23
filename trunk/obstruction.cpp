@@ -18,6 +18,14 @@ class obstruction : virtual public top_view_object, virtual public angular {
 				(pos + rot_points[(i==length-1)?0:i+1]).x,
 				(pos + rot_points[(i==length-1)?0:i+1]).y,
 				makecol(0, 255, 0));
+			triangle(buffer,
+				(pos + rot_points[i]).x,
+				(pos + rot_points[i]).y,
+				(pos + rot_points[(i==length-1)?0:i+1]).x,
+				(pos + rot_points[(i==length-1)?0:i+1]).y,
+				pos.x,
+				pos.y,
+				makecol(0, 255, 0));
 		}
 	}
 };
