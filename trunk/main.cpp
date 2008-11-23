@@ -4,6 +4,7 @@
 #include "basic_physics_object.cpp"
 #include "top_view_object.cpp"
 #include "angular.cpp"
+#include "shot.cpp"
 #include "cannon.cpp"
 #include "obstruction.cpp"
 #include "tanks.cpp"
