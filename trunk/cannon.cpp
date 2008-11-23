@@ -1,7 +1,25 @@
 class cannon : virtual public top_view_object, virtual public angular {
 	public:
+	std::vector<shot> * shots;
+	
 	cannon(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos, Points) {
 		
+	}
+	
+	cannon(Vector Pos, std::vector<Vector> Points, std::vector<shot> * Shots) : top_view_object(Pos, Points) {
+		shots = Shots;
+	}
+	
+	cannon(std::vector<shot> * Shots) {
+		pos = Vector(0, 0);
+		points.push_back(Vector(-5,  2));
+		points.push_back(Vector(20,  2));
+		points.push_back(Vector(20, -2));
+		points.push_back(Vector(-5, -2));
+		//angle = -(PI/2);
+		angle = 0;
+		shots = Shots;
+		update_angles();
 	}
 	
 	cannon() {
@@ -10,7 +28,7 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(20,  2));
 		points.push_back(Vector(20, -2));
 		points.push_back(Vector(-5, -2));
-		angle = 90;
+		angle = -(PI/2);
 		update_angles();
 	}
 	
@@ -33,5 +51,9 @@ class cannon : virtual public top_view_object, virtual public angular {
 				pos.y,
 				makecol(0, 0, 255));
 		}
+	}
+	
+	virtual void shoot() {
+		shots->push_back(default_shot(pos, angle));
 	}
 };

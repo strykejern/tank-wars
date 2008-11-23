@@ -1,18 +1,22 @@
 #include <allegro.h>
 #include <vector>
+
+#define PI 3.14159265358979323846264338327950288419716f
+#define SCREEN_X 640
+#define SCREEN_Y 480
+
 #include "vector.cpp"
 #include "basic_physics_object.cpp"
 #include "top_view_object.cpp"
 #include "angular.cpp"
 #include "shot.cpp"
+#include "default_shot.cpp"
+#include "timer_class.cpp"
 #include "cannon.cpp"
 #include "obstruction.cpp"
 #include "tanks.cpp"
 #include "default_tank.cpp"
 #include "tanks_game.cpp"
-
-#define SCREEN_X 640
-#define SCREEN_Y 480
 
 volatile long speed_counter = 0;
 
@@ -46,10 +50,10 @@ int main() {
     
     tanks_game game;
     game.add_tank(default_tank(Vector(200, 200)));
-    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT]);
+    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS]);
     
     game.add_tank(default_tank(Vector(300, 300)));
-    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D]);
+    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_COMMA]);
     
     game.set_collision_vectors(collision_vectors);
     

@@ -2,6 +2,7 @@ class tanks_game {
 	public:
 	std::vector<tank> tanks;
 	std::vector<obstruction> obstructions;
+	std::vector<shot> shots;
 	
 	std::vector<Vector> collision_vectors;
 	
@@ -10,11 +11,12 @@ class tanks_game {
 	}
 	
 	void add_tank(Vector pos, std::vector<Vector> points) {
-		tanks.push_back(tank(pos, points));
+		tanks.push_back(tank(pos, points, &shots));
 	}
 	
 	void add_tank(tank tank1) {
 		tanks.push_back(tank1);
+		tanks[(int)tanks.size()-1].set_shots(&shots);
 	}
 	
 	void add_obstruction(Vector pos, std::vector<Vector> points) {
@@ -34,6 +36,12 @@ class tanks_game {
 				if(collision_check(tanks[i], obstructions[x]))
 					collision(&tanks[i], obstructions[x]);
 		}
+		for (int i = 0; i < (int)shots.size(); ++i) {
+			if (shots[i].update()) {
+				shots.erase(shots.begin()+i);
+				--i;
+			}
+		}
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -41,6 +49,9 @@ class tanks_game {
 			tanks[i].draw_bounding_box(buffer);
 		for (int i = 0; i < (int)obstructions.size(); ++i)
 			obstructions[i].draw_bounding_box(buffer);
+		for (int i = 0; i < (int)shots.size(); ++i)
+			shots[i].draw_bounding_box(buffer);
+		textprintf_ex(buffer, font, 10, 10, makecol(255, 0, 0), -1, "%i", (int)shots.size());
 	}
 	
 	bool collision_check(angular tank1, angular tank2) {
