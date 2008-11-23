@@ -3,17 +3,17 @@ class tanks_game {
 	std::vector<tank> tanks;
 	std::vector<obstruction> obstructions;
 	
-	Vector * collision_vectors;
+	std::vector<Vector> collision_vectors;
 	
 	tanks_game() {
 		
 	}
 	
-	void add_tank(Vector pos, Vector * points, int length) {
-		tanks.push_back(tank(pos, points, length));
+	void add_tank(Vector pos, std::vector<Vector> points) {
+		tanks.push_back(tank(pos, points));
 	}
-	void add_obstruction(Vector pos, Vector * points, int length) {
-		obstructions.push_back(obstruction(pos, points, length));
+	void add_obstruction(Vector pos, std::vector<Vector> points) {
+		obstructions.push_back(obstruction(pos, points));
 	}
 	
 	void update() {
@@ -41,10 +41,8 @@ class tanks_game {
 	bool collision_check(angular tank1, angular tank2) {
 		int overlaps = 0;
 		for (int i = 0; i < 9; ++i) {
-			float * ttmp1 = tank1.project_to(collision_vectors[i]);
-			float tmp1[] = {ttmp1[0], ttmp1[1]};
-			float * ttmp2 = tank2.project_to(collision_vectors[i]);
-			float tmp2[] = {ttmp2[0], ttmp2[1]};
+			std::vector<float> tmp1 = tank1.project_to(collision_vectors[i]);
+			std::vector<float> tmp2 = tank2.project_to(collision_vectors[i]);
 			if (between(tmp1[0], tmp2[0], tmp2[1]) ||
 				between(tmp1[1], tmp2[0], tmp2[1]) ||
 				between(tmp2[0], tmp1[0], tmp1[1]) ||
@@ -57,21 +55,18 @@ class tanks_game {
 	}
 	
 	void collision(tank * tanks1, tank * tanks2) {
-		tanks1->pos -= tanks1->speed;
-		tanks1->speed = Vector();
-		tanks2->pos -= tanks2->speed;
-		tanks2->speed = Vector();
+		tanks1->collide_drive();
+		tanks2->collide_drive();
 		if (collision_check(*tanks1, *tanks2)) {
-			tanks1->angle -= tanks1->last_rot * tanks1->HANDLING;
-			tanks2->angle -= tanks2->last_rot * tanks2->HANDLING;
+			tanks1->collide_rotate();
+			tanks2->collide_rotate();
 		}
 	}
 	
 	void collision(tank * tanks1, obstruction obs) {
-		tanks1->pos -= tanks1->speed;
-		tanks1->speed = Vector();
+		tanks1->collide_drive();
 		if (collision_check(*tanks1, obs)) {
-			tanks1->angle -= tanks1->last_rot * tanks1->HANDLING;
+			tanks1->collide_rotate();
 		}
 	}
 	
@@ -81,7 +76,7 @@ class tanks_game {
 		return false;
 	}
 	
-	void set_collision_vectors(Vector * collisions) {
+	void set_collision_vectors(std::vector<Vector> collisions) {
 		collision_vectors = collisions;
 	}
 };

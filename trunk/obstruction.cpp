@@ -1,6 +1,6 @@
 class obstruction : virtual public top_view_object, virtual public angular {
 	public:
-	obstruction(Vector Pos, Vector * Points, int Length) : top_view_object(Pos, Points, Length) {
+	obstruction(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos, Points) {
 		//angle = 90;
 	}
 	
@@ -9,7 +9,8 @@ class obstruction : virtual public top_view_object, virtual public angular {
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {
-		Vector * rot_points = ang_points();
+		int length = (int)points.size();
+		std::vector<Vector> rot_points = ang_points();
 		for (int i = 0; i < length; ++i) {
 			line(buffer,
 				(pos + rot_points[i]).x,

@@ -37,44 +37,34 @@ int main() {
     
     BITMAP * buffer = create_bitmap(SCREEN_X, SCREEN_Y);
     
-    Vector collision_vectors[4];
+    std::vector<Vector> collision_vectors;
 	for (int i = 0; i < 9; ++i) {
-		collision_vectors[i] = Vector(1.0f, 20.0f*i, 0);
+		collision_vectors.push_back(Vector(1.0f, 20.0f*i, 0));
 	}
     
-    Vector points[] = {
-    	Vector(-10,  15),
-    	Vector(  0,  20),
-    	Vector( 10,  15),
-    	Vector( 10, -15),
-    	Vector(-10, -15)
-	};
-	
-	Vector points2[] = {
-    	Vector(-10,  15),
-    	Vector(  0,  20),
-    	Vector( 10,  15),
-    	Vector( 10, -15),
-    	Vector(-10, -15)
-	};
+    std::vector<Vector> points; 
+    points.push_back(Vector(-10,  15));
+    points.push_back(Vector(  0,  20));
+    points.push_back(Vector( 10,  15));
+    points.push_back(Vector( 10, -15));
+    points.push_back(Vector(-10, -15));
     
     tanks_game game;
-    game.add_tank(Vector(200, 200), points, 5);
+    game.add_tank(Vector(200, 200), points);
     game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT]);
     
-    game.add_tank(Vector(300, 300), points2, 5);
+    game.add_tank(Vector(300, 300), points);
     game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D]);
     
     game.set_collision_vectors(collision_vectors);
     
-    for (int i = 0; i < 5; ++i) {
-    	Vector tmp_points[] = {
-    		Vector(-10,  15),
-    		Vector( 10,  15),
-			Vector( 10, -15),
-			Vector(-10, -15)
-		};
-    	game.add_obstruction(Vector(rand()%600, rand()%400), tmp_points, 4);
+    std::vector<Vector> tmp_points;
+    tmp_points.push_back(Vector(-10,  15));
+    tmp_points.push_back(Vector( 10,  15));
+    tmp_points.push_back(Vector( 10, -15));
+    tmp_points.push_back(Vector(-10, -15));
+    for (int i = 0; i < 5; ++i) { 
+    	game.add_obstruction(Vector(rand()%600, rand()%400), tmp_points);
 	}
     
     while (!key[KEY_ESC]) {
