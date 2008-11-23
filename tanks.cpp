@@ -1,25 +1,22 @@
-#define SCREEN_X 640
-#define SCREEN_Y 480
-
-class tank : virtual public top_view_object, virtual public basic_physics_object, virtual public angular {
+class tank : virtual public top_view_object, virtual public basic_physics_object, virtual public angular, public timer_class {
 	public:
 	float ACCEL;
 	float MAX_SPEED;
 	float HANDLING;
 	float ROT_DEC;
 	int last_rot;
-	volatile char * input[4];
+	volatile char * input[7];
 	std::vector<cannon> cannons;
 	
-	tank(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos,Points) {
+	tank(Vector Pos, std::vector<Vector> Points, std::vector<shot> * Shots) : top_view_object(Pos,Points), timer_class(1) {
 		ACCEL = 0.2f;
 		MAX_SPEED = 10;
 		HANDLING = 0.1f;
 		ROT_DEC = 0.95f;
 		volatile char dummy;
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 7; ++i)
 			input[i] = &dummy;
-		cannons.push_back(cannon());
+		cannons.push_back(cannon(Shots));
 	}
 	tank() {
 		ACCEL = 0.2f;
@@ -30,6 +27,12 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		for (int i = 0; i < 4; ++i)
 			input[i] = &dummy;
 		cannons.push_back(cannon());
+	}
+	
+	void set_shots(std::vector<shot> * Shots) {
+		for (int i = 0; i < (int)cannons.size(); ++i) {
+			cannons[i].shots = Shots;
+		}
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -62,6 +65,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	}
 	
 	void update() {
+		update_timers();
 		if ((bool)*input[2]) {
 			angle -= HANDLING;
 			speed *= ROT_DEC;
@@ -86,6 +90,11 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 			speed = Vector();
 		}
 		
+		if ((bool)*input[4])
+			if (zero(0, 30))
+				for (int i = 0; i < (int)cannons.size(); ++i)
+					cannons[i].shoot();
+		
 		accelerate();
 		if (speed.length() > MAX_SPEED)
 			speed.set_length(MAX_SPEED);
@@ -101,11 +110,12 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		}
 	}
 	
-	void set_inputs(volatile char * drive, volatile char * reverse, volatile char * turn_left, volatile char * turn_right) {
+	void set_inputs(volatile char * drive, volatile char * reverse, volatile char * turn_left, volatile char * turn_right, volatile char * Shoot) {
 		input[0] = drive;
 		input[1] = reverse;
 		input[2] = turn_left;
 		input[3] = turn_right;
+		input[4] = Shoot;
 	}
 	
 	void collide_drive() {
