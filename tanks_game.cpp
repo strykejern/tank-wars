@@ -46,11 +46,11 @@ class tanks_game {
 	
 	void draw(BITMAP * buffer) {
 		for (int i = 0; i < (int)tanks.size(); ++i)
-			tanks[i].draw_bounding_box(buffer);
+			tanks[i].draw(buffer);
 		for (int i = 0; i < (int)obstructions.size(); ++i)
-			obstructions[i].draw_bounding_box(buffer);
+			obstructions[i].draw(buffer);
 		for (int i = 0; i < (int)shots.size(); ++i)
-			shots[i].draw_bounding_box(buffer);
+			shots[i].draw(buffer);
 		textprintf_ex(buffer, font, 10, 10, makecol(255, 0, 0), -1, "%i", (int)shots.size());
 	}
 	

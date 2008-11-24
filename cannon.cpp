@@ -1,6 +1,8 @@
 class cannon : virtual public top_view_object, virtual public angular {
 	public:
 	std::vector<shot> * shots;
+	BITMAP * image;
+	Vector image_offset;
 	
 	cannon(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos, Points) {
 		
@@ -30,6 +32,19 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(-5, -2));
 		angle = -(PI/2);
 		update_angles();
+	}
+	
+	void draw(BITMAP * buffer) {
+		if (image == NULL)
+			draw_bounding_box(buffer);
+		else
+			pivot_sprite(buffer, 
+						image, 
+						pos.x, 
+						pos.y, 
+						image_offset.x, 
+						image_offset.y, 
+						itofix(angle*(128/PI)));
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {

@@ -7,8 +7,11 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	int last_rot;
 	volatile char * input[7];
 	std::vector<cannon> cannons;
+	BITMAP * image;
+	Vector image_offset;
 	
 	tank(Vector Pos, std::vector<Vector> Points, std::vector<shot> * Shots) : top_view_object(Pos,Points), timer_class(1) {
+		timers.push_back(0);
 		ACCEL = 0.2f;
 		MAX_SPEED = 10;
 		HANDLING = 0.1f;
@@ -19,6 +22,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		cannons.push_back(cannon(Shots));
 	}
 	tank() {
+		timers.push_back(0);
 		ACCEL = 0.2f;
 		MAX_SPEED = 10;
 		HANDLING = 0.1f;
@@ -26,17 +30,12 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		volatile char dummy;
 		for (int i = 0; i < 4; ++i)
 			input[i] = &dummy;
-		cannons.push_back(cannon());
 	}
 	
 	void set_shots(std::vector<shot> * Shots) {
 		for (int i = 0; i < (int)cannons.size(); ++i) {
 			cannons[i].shots = Shots;
 		}
-	}
-	
-	void draw(BITMAP * buffer) {
-		
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {
@@ -94,6 +93,12 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 			if (zero(0, 30))
 				for (int i = 0; i < (int)cannons.size(); ++i)
 					cannons[i].shoot();
+		if((bool)*input[5])
+			for (int i = 0; i < (int)cannons.size(); ++i)
+				cannons[i].angle -= HANDLING;
+		if((bool)*input[6])
+			for (int i = 0; i < (int)cannons.size(); ++i)
+				cannons[i].angle += HANDLING;
 		
 		accelerate();
 		if (speed.length() > MAX_SPEED)
@@ -110,12 +115,14 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		}
 	}
 	
-	void set_inputs(volatile char * drive, volatile char * reverse, volatile char * turn_left, volatile char * turn_right, volatile char * Shoot) {
+	void set_inputs(volatile char * drive, volatile char * reverse, volatile char * turn_left, volatile char * turn_right, volatile char * Shoot, volatile char * cannon_left, volatile char * cannon_right) {
 		input[0] = drive;
 		input[1] = reverse;
 		input[2] = turn_left;
 		input[3] = turn_right;
 		input[4] = Shoot;
+		input[5] = cannon_left;
+		input[6] = cannon_right;
 	}
 	
 	void collide_drive() {
@@ -127,5 +134,29 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		angle -= last_rot * HANDLING;
 		last_rot = -last_rot;
 		update_cannon();
+	}
+
+	void set_images(BITMAP * Image, Vector Image_offset) {
+		set_image(Image, Image_offset);
+	}
+	
+	void draw(BITMAP * buffer) {
+		if (image == NULL)
+			draw_bounding_box(buffer);
+		else {
+			pivot_sprite(buffer, 
+						image, 
+						pos.x, 
+						pos.y, 
+						image_offset.x, 
+						image_offset.y, 
+						itofix(angle*(128/PI)));
+			for (int i = 0; i < (int)cannons.size(); ++i)
+				cannons[i].draw(buffer);
+		}
+	}
+	
+	void set_image(BITMAP * Image, Vector Image_offset){
+		image = Image;
 	}
 };

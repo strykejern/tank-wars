@@ -5,6 +5,7 @@
 struct angle_vector {
 	float angle;
 	float length;
+	
 	angle_vector(float Angle, float Length) {
 		angle = Angle;
 		length = Length;
@@ -20,10 +21,16 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	float angle;
 	std::vector<float> angles;
 	std::vector<float> lengths;
+	bool fixed_rot;
 	
 	angular() {
 		angle = 0;
 		update_angles();
+		fixed_rot = false;
+	}
+	angular(bool fixed) {
+		angle = 0;
+		fixed_rot = fixed;
 	}
 	
 	void update_angles() {
@@ -32,7 +39,7 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 		int length = (int)points.size();
 		std::list<angle_vector> tmp_list;
 		for (int i = 0; i < length; ++i) {
-			tmp_list.push_back(angle_vector(points[i].angle(), points[i].length()));
+			tmp_list.push_back(angle_vector(points[i].angle() - (PI/2), points[i].length()));
 		}
 		tmp_list.sort(less_than);
 		std::list<angle_vector>::iterator av;
@@ -48,12 +55,17 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	}
 	
 	std::vector<Vector> ang_points() {
-		int length = (int)points.size();
-		std::vector<Vector> tmp_points ;
-		for (int i = 0; i < length; ++i) {
-			tmp_points.push_back(Vector(lengths[i], angle + angles[i], 0));
+		if (fixed_rot) {
+			return points;
 		}
-		return tmp_points;
+		else {
+			int length = (int)points.size();
+			std::vector<Vector> tmp_points ;
+			for (int i = 0; i < length; ++i) {
+				tmp_points.push_back(Vector(lengths[i], angle + angles[i], 0));
+			}
+			return tmp_points;
+		}
 	}
 	
 	std::vector<float> project_to(Vector v) {
