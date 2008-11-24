@@ -18,7 +18,7 @@ struct shot : virtual public top_view_object, virtual public basic_physics_objec
 		homing = false;
 		pos = Pos;
 		angle = Angle;
-		speed = Vector(Speed, angle-(PI*1.5f), 0);
+		speed = -Vector(Speed, angle, 0);
 	}
 	
 	void set_drag(float Drag) {
@@ -37,6 +37,10 @@ struct shot : virtual public top_view_object, virtual public basic_physics_objec
 		move();
 		if (homing) update_drag();
 		return pos.x < 0 || pos.x > SCREEN_X || pos.y < 0 || pos.y > SCREEN_Y;
+	}
+	
+	void draw(BITMAP * buffer) {
+		draw_bounding_box(buffer);
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {

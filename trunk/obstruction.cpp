@@ -1,11 +1,11 @@
 class obstruction : virtual public top_view_object, virtual public angular {
 	public:
-	obstruction(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos, Points) {
+	obstruction(Vector Pos, std::vector<Vector> Points) : top_view_object(Pos, Points), angular(true) {
 		//angle = 90;
 	}
 	
 	void draw(BITMAP * buffer) {
-		
+		draw_bounding_box(buffer);
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {

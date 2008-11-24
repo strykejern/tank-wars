@@ -15,6 +15,7 @@
 #include "cannon.cpp"
 #include "obstruction.cpp"
 #include "tanks.cpp"
+#include "ove_tank.cpp"
 #include "default_tank.cpp"
 #include "tanks_game.cpp"
 
@@ -49,11 +50,11 @@ int main() {
 	}
     
     tanks_game game;
-    game.add_tank(default_tank(Vector(200, 200)));
-    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS]);
+    game.add_tank(ove_tank(Vector(200, 200)));
+    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS], &key[KEY_N], &key[KEY_M]);
     
-    game.add_tank(default_tank(Vector(300, 300)));
-    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_COMMA]);
+    game.add_tank(default_tank(Vector(100, 100)));
+    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_F], &key[KEY_G], &key[KEY_H]);
     
     game.set_collision_vectors(collision_vectors);
     
@@ -76,9 +77,8 @@ int main() {
 		}
 		//drawing goes here
 		game.draw(buffer);
-		
 		blit(buffer, screen, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
-        clear_bitmap(buffer);
+        clear_to_color(buffer, makecol(25, 25, 25));
 
 	}
 	destroy_bitmap(buffer);
