@@ -1,24 +1,30 @@
-struct shot : virtual public top_view_object, virtual public basic_physics_object, virtual public angular {
+struct shot : virtual public basic_physics_object, virtual public angular, virtual public top_view_object {
 	float blast_radius;
 	float damage;
 	float drag;
 	bool homing;
+	float contact_point;
+	int parent;
 	
 	shot() {
 		blast_radius = 0;
 		damage = 0;
 		drag = 0;
+		contact_point = 0;
 		homing = false;
+		pos = Vector();
 	}
 	
-	shot(Vector Pos, float Angle, float Speed) : top_view_object(Pos, std::vector<Vector>()) {
+	shot(Vector Pos, float Angle, float Speed, int Index) : top_view_object(Pos), angular() {
 		blast_radius = 0;
 		damage = 0;
 		drag = 0;
+		contact_point = 0;
 		homing = false;
 		pos = Pos;
 		angle = Angle;
 		speed = -Vector(Speed, angle, 0);
+		parent = Index;
 	}
 	
 	void set_drag(float Drag) {
@@ -62,5 +68,18 @@ struct shot : virtual public top_view_object, virtual public basic_physics_objec
 				pos.y,
 				makecol(0, 0, 255));
 		}
+	}
+
+	void set_contact_point() {
+		if (lengths.empty()) return;
+		float length = lengths[0];
+		for (int i = 1; i < (int)lengths.size(); ++i)
+			if (lengths[i] > length)
+				length = lengths[i];
+		contact_point = length;
+	}
+	
+	Vector get_contact_point() {
+		return pos - Vector(contact_point, angle, 0);
 	}
 };

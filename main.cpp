@@ -6,12 +6,14 @@
 #define SCREEN_Y 480
 
 #include "vector.cpp"
+#include "timer_class.cpp"
 #include "basic_physics_object.cpp"
 #include "top_view_object.cpp"
 #include "angular.cpp"
+#include "explosion.cpp"
+#include "default_explosion.cpp"
 #include "shot.cpp"
 #include "default_shot.cpp"
-#include "timer_class.cpp"
 #include "cannon.cpp"
 #include "obstruction.cpp"
 #include "tanks.cpp"
@@ -53,7 +55,7 @@ int main() {
     game.add_tank(ove_tank(Vector(200, 200)));
     game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS], &key[KEY_N], &key[KEY_M]);
     
-    game.add_tank(default_tank(Vector(100, 100)));
+    game.add_tank(ove_tank(Vector(100, 100)));
     game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_F], &key[KEY_G], &key[KEY_H]);
     
     game.set_collision_vectors(collision_vectors);

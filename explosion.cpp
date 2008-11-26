@@ -9,9 +9,11 @@ struct explosion : public timer_class, public basic_game_object {
 		damage = Damage;
 	}
 	
-	void update() {
+	bool update() {
 		update_timers();
-		if (radius<max_radius&&zero(0, 5))radius++;
+		if (radius<max_radius&&zero(0, 1))radius++;
+		if (radius >= max_radius) return true;
+		return false;
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -19,8 +21,8 @@ struct explosion : public timer_class, public basic_game_object {
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {
-		circle(buffer, pos.x, pos.y, radius-1, makecol(0, 255, 255));
+		circle(buffer, pos.x, pos.y, radius-2, makecol(0, 255, 255));
 		circle(buffer, pos.x, pos.y, radius  , makecol(0, 255, 255));
-		circle(buffer, pos.x, pos.y, radius+1, makecol(0, 255, 255));
+		circle(buffer, pos.x, pos.y, radius+2, makecol(0, 255, 255));
 	}
 };
