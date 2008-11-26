@@ -5,6 +5,8 @@
 #define SCREEN_X 640
 #define SCREEN_Y 480
 
+PALETTE palette;
+
 #include "vector.cpp"
 #include "timer_class.cpp"
 #include "basic_physics_object.cpp"
@@ -79,6 +81,7 @@ int main() {
 		}
 		//drawing goes here
 		game.draw(buffer);
+		if (key[KEY_F5]) save_bitmap("screenshot.bmp", buffer, palette);
 		blit(buffer, screen, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
         clear_to_color(buffer, makecol(25, 25, 25));
 
