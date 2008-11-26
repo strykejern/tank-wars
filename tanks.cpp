@@ -7,13 +7,11 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	int last_rot;
 	volatile char * input[7];
 	std::vector<cannon> cannons;
-	BITMAP * image;
 	Vector image_offset;
 	static int num_tanks;
 	int index;
 	
 	tank(Vector Pos, std::vector<Vector> Points, std::vector<shot> * Shots) : top_view_object(Pos,Points), timer_class(1) {
-		timers.push_back(0);
 		ACCEL = 0.2f;
 		MAX_SPEED = 10;
 		HANDLING = 0.1f;
@@ -24,7 +22,17 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		cannons.push_back(cannon(Shots));
 		index = num_tanks++;
 	}
-	tank() {
+	tank(Vector Pos) : top_view_object(Pos), timer_class(1) {
+		ACCEL = 0.2f;
+		MAX_SPEED = 10;
+		HANDLING = 0.1f;
+		ROT_DEC = 0.95f;
+		volatile char dummy;
+		for (int i = 0; i < 4; ++i)
+			input[i] = &dummy;
+		index = num_tanks++;
+	}
+	tank() : timer_class(1) {
 		timers.push_back(0);
 		ACCEL = 0.2f;
 		MAX_SPEED = 10;
