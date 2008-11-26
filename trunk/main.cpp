@@ -18,6 +18,7 @@ PALETTE palette;
 #include "default_shot.cpp"
 #include "cannon.cpp"
 #include "obstruction.cpp"
+#include "default_obstruction.cpp"
 #include "tanks.cpp"
 #include "ove_tank.cpp"
 #include "default_tank.cpp"
@@ -62,15 +63,9 @@ int main() {
     
     game.set_collision_vectors(collision_vectors);
     
-    std::vector<Vector> tmp_points;
-    tmp_points.push_back(Vector(-10,  15));
-    tmp_points.push_back(Vector( 10,  15));
-    tmp_points.push_back(Vector( 10, -15));
-    tmp_points.push_back(Vector(-10, -15));
-    
     //srand((int)&tmp_points);
     for (int i = 0; i < 10; ++i) { 
-    	game.add_obstruction(Vector(rand()%600, rand()%400), tmp_points);
+    	game.add_obstruction(default_obstruction(Vector(rand()%600, rand()%400)));
 	}
     
     while (!key[KEY_ESC]) {

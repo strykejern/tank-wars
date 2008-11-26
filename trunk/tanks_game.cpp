@@ -24,6 +24,10 @@ class tanks_game {
 		obstructions.push_back(obstruction(pos, points));
 	}
 	
+	void add_obstruction(obstruction obs1) {
+		obstructions.push_back(obs1);
+	}
+	
 	void update() {
 		for (int i = 0; i < (int)tanks.size(); ++i) {
 			tanks[i].update();
@@ -43,6 +47,13 @@ class tanks_game {
 						collision(&tanks[i], shots[x]);
 						shots.erase(shots.begin()+x--);
 					}
+		}
+		for (int i = 0; i < (int)obstructions.size(); ++i) {
+			for (int x = 0; x < (int)shots.size(); ++x)
+				if(collision_check(obstructions[i], shots[x])) {
+					collision(obstructions[i], shots[x]);
+					shots.erase(shots.begin()+x--);
+				}
 		}
 		for (int i = 0; i < (int)shots.size(); ++i) {
 			if (shots[i].update()) {
@@ -102,8 +113,8 @@ class tanks_game {
 		explosions.push_back(default_explosion(shots1.get_contact_point()));
 	}
 	
-	void collision(obstruction * obstructions1, shot * shots1) {
-		explosions.push_back(default_explosion(shots1->get_contact_point()));
+	void collision(obstruction obstructions1, shot shots1) {
+		explosions.push_back(default_explosion(shots1.get_contact_point()));
 	}
 	
 	bool between (float x, float min, float max) {
