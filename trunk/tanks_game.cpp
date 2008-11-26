@@ -40,7 +40,7 @@ class tanks_game {
 			for (int x = 0; x < (int)shots.size(); ++x)
 				if (i != shots[x].parent)
 					if(collision_check(tanks[i], shots[x])) {
-						collision(&tanks[i], &shots[x]);
+						collision(&tanks[i], shots[x]);
 						shots.erase(shots.begin()+x--);
 					}
 		}
@@ -98,8 +98,8 @@ class tanks_game {
 		}
 	}
 	
-	void collision(tank * tanks1, shot * shots1) {
-		explosions.push_back(default_explosion(shots1->get_contact_point()));
+	void collision(tank * tanks1, shot shots1) {
+		explosions.push_back(default_explosion(shots1.get_contact_point()));
 	}
 	
 	void collision(obstruction * obstructions1, shot * shots1) {
