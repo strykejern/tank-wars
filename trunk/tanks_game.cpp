@@ -3,6 +3,7 @@ class tanks_game {
 	std::vector<tank> tanks;
 	std::vector<obstruction> obstructions;
 	std::vector<shot> shots;
+	std::vector<explosion> explosions;
 	
 	std::vector<Vector> collision_vectors;
 	
@@ -35,23 +36,34 @@ class tanks_game {
 			for (int x = 0; x < (int)obstructions.size(); ++x)
 				if(collision_check(tanks[i], obstructions[x]))
 					collision(&tanks[i], obstructions[x]);
+					
+			for (int x = 0; x < (int)shots.size(); ++x)
+				if (i != shots[x].parent)
+					if(collision_check(tanks[i], shots[x])) {
+						collision(&tanks[i], &shots[x]);
+						shots.erase(shots.begin()+x--);
+					}
 		}
 		for (int i = 0; i < (int)shots.size(); ++i) {
 			if (shots[i].update()) {
-				shots.erase(shots.begin()+i);
-				--i;
+				shots.erase(shots.begin()+i--);
 			}
+		}
+		for (int i = 0; i < (int)explosions.size(); ++i) {
+			if (explosions[i].update())
+				explosions.erase(explosions.begin()+i--);
 		}
 	}
 	
 	void draw(BITMAP * buffer) {
+		for (int i = 0; i < (int)shots.size(); ++i)
+			shots[i].draw(buffer);
 		for (int i = 0; i < (int)tanks.size(); ++i)
 			tanks[i].draw(buffer);
 		for (int i = 0; i < (int)obstructions.size(); ++i)
 			obstructions[i].draw(buffer);
-		for (int i = 0; i < (int)shots.size(); ++i)
-			shots[i].draw(buffer);
-		textprintf_ex(buffer, font, 10, 10, makecol(255, 0, 0), -1, "%i", (int)shots.size());
+		for (int i = 0; i < (int)explosions.size(); ++i)
+			explosions[i].draw(buffer);
 	}
 	
 	bool collision_check(angular tank1, angular tank2) {
@@ -84,6 +96,14 @@ class tanks_game {
 		if (collision_check(*tanks1, obs)) {
 			tanks1->collide_rotate();
 		}
+	}
+	
+	void collision(tank * tanks1, shot * shots1) {
+		explosions.push_back(default_explosion(shots1->get_contact_point()));
+	}
+	
+	void collision(obstruction * obstructions1, shot * shots1) {
+		explosions.push_back(default_explosion(shots1->get_contact_point()));
 	}
 	
 	bool between (float x, float min, float max) {

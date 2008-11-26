@@ -68,7 +68,7 @@ class cannon : virtual public top_view_object, virtual public angular {
 		}
 	}
 	
-	virtual void shoot() {
-		shots->push_back(default_shot(pos, angle));
+	virtual void shoot(int Index) {
+		shots->push_back(default_shot(pos, angle, Index));
 	}
 };

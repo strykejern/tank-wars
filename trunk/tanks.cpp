@@ -9,6 +9,8 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 	std::vector<cannon> cannons;
 	BITMAP * image;
 	Vector image_offset;
+	static int num_tanks;
+	int index;
 	
 	tank(Vector Pos, std::vector<Vector> Points, std::vector<shot> * Shots) : top_view_object(Pos,Points), timer_class(1) {
 		timers.push_back(0);
@@ -20,6 +22,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		for (int i = 0; i < 7; ++i)
 			input[i] = &dummy;
 		cannons.push_back(cannon(Shots));
+		index = num_tanks++;
 	}
 	tank() {
 		timers.push_back(0);
@@ -30,6 +33,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		volatile char dummy;
 		for (int i = 0; i < 4; ++i)
 			input[i] = &dummy;
+		index = num_tanks++;
 	}
 	
 	void set_shots(std::vector<shot> * Shots) {
@@ -92,7 +96,7 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		if ((bool)*input[4])
 			if (zero(0, 30))
 				for (int i = 0; i < (int)cannons.size(); ++i)
-					cannons[i].shoot();
+					cannons[i].shoot(index);
 		if((bool)*input[5])
 			for (int i = 0; i < (int)cannons.size(); ++i)
 				cannons[i].angle -= HANDLING;
@@ -160,3 +164,5 @@ class tank : virtual public top_view_object, virtual public basic_physics_object
 		image = Image;
 	}
 };
+
+int tank::num_tanks = 0;
