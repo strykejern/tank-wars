@@ -1,7 +1,5 @@
 #include <list>
 
-#define SCREEN_X 640
-#define SCREEN_Y 480
 struct angle_vector {
 	float angle;
 	float length;
@@ -56,7 +54,7 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 		update_angles();
 	}
 	
-	std::vector<Vector> ang_points() {
+	std::vector<Vector> abs_points() {
 		if (fixed_rot) {
 			return points;
 		}
@@ -64,7 +62,7 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 			int length = (int)points.size();
 			std::vector<Vector> tmp_points ;
 			for (int i = 0; i < length; ++i) {
-				tmp_points.push_back(Vector(lengths[i], angle + angles[i], 0));
+				tmp_points.push_back(pos + Vector(lengths[i], angle + angles[i], 0));
 			}
 			return tmp_points;
 		}
@@ -72,12 +70,12 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	
 	std::vector<float> project_to(Vector v) {
 		int length = (int)points.size();
-		std::vector<Vector> rot_points = ang_points();
+		std::vector<Vector> rot_points = abs_points();
 		std::vector<float> border;
-		border.push_back((pos + rot_points[0]) * v);
-		border.push_back((pos + rot_points[0]) * v);
+		border.push_back(rot_points[0] * v);
+		border.push_back(rot_points[0] * v);
 		for (int i = 1; i < length; ++i) {
-			float tmp = (pos + rot_points[i]) * v;
+			float tmp = rot_points[i] * v;
 			if (tmp < border[0]) border[0] = tmp;
 			else if(tmp > border[1]) border[1] = tmp;
 		}
@@ -86,27 +84,23 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	
 	void border_collide() {
 		int length = (int)points.size();
-		std::vector<Vector> rot_points = ang_points();
-		std::vector<Vector> abs_points;
-		for (int i = 0; i < length; ++i) {
-			abs_points.push_back(pos + rot_points[i]);
-		}
+		std::vector<Vector> tmp_points = abs_points();
 		
 		for (int i = 0; i < length; ++i) {
-			if (abs_points[i].x > SCREEN_X){ 
-				pos.x -= abs_points[i].x - SCREEN_X;
+			if (tmp_points[i].x > SCREEN_X){ 
+				pos.x -= tmp_points[i].x - SCREEN_X;
 				speed.x = 0;
 			}
-			else if (abs_points[i].x < 0){ 
-				pos.x += -abs_points[i].x;
+			else if (tmp_points[i].x < 0){ 
+				pos.x += -tmp_points[i].x;
 				speed.x -= 0;
 			}
-			if (abs_points[i].y > SCREEN_Y){ 
-				pos.y -= abs_points[i].y - SCREEN_Y;
+			if (tmp_points[i].y > SCREEN_Y){ 
+				pos.y -= tmp_points[i].y - SCREEN_Y;
 				speed.y = 0;
 			}
-			else if (abs_points[i].y < 0){ 
-				pos.y += -abs_points[i].y;
+			else if (tmp_points[i].y < 0){ 
+				pos.y += -tmp_points[i].y;
 				speed.y = 0;
 			}
 		}

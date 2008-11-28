@@ -30,7 +30,7 @@ class tanks_game {
 	
 	void update() {
 		for (int i = 0; i < (int)tanks.size(); ++i) {
-			tanks[i].update();
+			if (tanks[i].alive()) tanks[i].update();
 		}
 		for (int i = 0; i < (int)tanks.size(); ++i) {
 			for (int x = i+1; x < (int)tanks.size(); ++x)
@@ -75,6 +75,8 @@ class tanks_game {
 			obstructions[i].draw(buffer);
 		for (int i = 0; i < (int)explosions.size(); ++i)
 			explosions[i].draw(buffer);
+		draw_health(buffer, tanks[0].health_int(), Vector(10, 10));
+		draw_health(buffer, tanks[1].health_int(), Vector(10, 30));
 	}
 	
 	bool collision_check(angular tank1, angular tank2) {
@@ -111,6 +113,7 @@ class tanks_game {
 	
 	void collision(tank * tanks1, shot shots1) {
 		explosions.push_back(default_explosion(shots1.get_contact_point()));
+		tanks1->damage(shots1.damage);
 	}
 	
 	void collision(obstruction obstructions1, shot shots1) {
@@ -125,5 +128,17 @@ class tanks_game {
 	
 	void set_collision_vectors(std::vector<Vector> collisions) {
 		collision_vectors = collisions;
+	}
+
+	void draw_health(BITMAP * buffer, int health, Vector pos) {
+		health = (health>0) ? health : 0;
+        int color = 0;
+        if (health>70&&health<=100) color = makecol(0,255,0);
+        else if (health>30&&health<=70) color = makecol(255,128,0);
+        else if (health<30) color = makecol(255,0,0);
+        else if (health>100) color = makecol(0,255,255);
+        rectfill(buffer, pos.x  , pos.y  , pos.x+101, pos.y+10, makecol(0  ,0,0));
+        rectfill(buffer, pos.x+1, pos.y+1, pos.x+((health<=100)?health:100), pos.y+9 , color);
+        textprintf_ex(buffer, font, pos.x+40, pos.y+2, makecol(255,255,255), -1, "%i", health);
 	}
 };
