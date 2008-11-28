@@ -1,29 +1,25 @@
-struct shot : virtual public basic_physics_object, virtual public angular, virtual public top_view_object {
+struct shot : virtual public basic_physics_object {
 	float blast_radius;
 	float damage;
 	float drag;
 	bool homing;
-	float contact_point;
 	int parent;
 	
 	shot() {
 		blast_radius = 0;
 		damage = 0;
 		drag = 0;
-		contact_point = 0;
 		homing = false;
 		pos = Vector();
 	}
 	
-	shot(Vector Pos, float Angle, float Speed, int Index) : top_view_object(Pos), angular() {
+	shot(Vector Pos, float Angle, float Speed, int Index) {
 		blast_radius = 0;
 		damage = 0;
 		drag = 0;
-		contact_point = 0;
 		homing = false;
 		pos = Pos;
-		angle = Angle;
-		speed = -Vector(Speed, angle, 0);
+		speed = -Vector(Speed, Angle, 0);
 		parent = Index;
 	}
 	
@@ -50,30 +46,14 @@ struct shot : virtual public basic_physics_object, virtual public angular, virtu
 	}
 	
 	void draw_bounding_box(BITMAP * buffer) {
-		int length = (int)points.size();
-		std::vector<Vector> rot_points = abs_points();
-		for (int i = 0; i < length; ++i) {
-			triangle(buffer,
-				rot_points[i].x,
-				rot_points[i].y,
-				rot_points[(i==length-1)?0:i+1].x,
-				rot_points[(i==length-1)?0:i+1].y,
-				pos.x,
-				pos.y,
-				makecol(0, 0, 255));
-		}
-	}
-
-	void set_contact_point() {
-		if (lengths.empty()) return;
-		float length = lengths[0];
-		for (int i = 1; i < (int)lengths.size(); ++i)
-			if (lengths[i] > length)
-				length = lengths[i];
-		contact_point = length;
+		circlefill(buffer,
+			pos.x,
+			pos.y,
+			2,
+			makecol(0, 0, 255));		
 	}
 	
-	Vector get_contact_point() {
-		return pos - Vector(contact_point, angle, 0);
+	float project_to(Vector v) {
+		return pos * v;
 	}
 };
