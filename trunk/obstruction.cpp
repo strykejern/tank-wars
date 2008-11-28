@@ -14,19 +14,19 @@ class obstruction : virtual public top_view_object, virtual public angular {
 	
 	void draw_bounding_box(BITMAP * buffer) {
 		int length = (int)points.size();
-		std::vector<Vector> rot_points = ang_points();
+		std::vector<Vector> rot_points = abs_points();
 		for (int i = 0; i < length; ++i) {
 			line(buffer,
-				(pos + rot_points[i]).x,
-				(pos + rot_points[i]).y,
-				(pos + rot_points[(i==length-1)?0:i+1]).x,
-				(pos + rot_points[(i==length-1)?0:i+1]).y,
+				rot_points[i].x,
+				rot_points[i].y,
+				rot_points[(i==length-1)?0:i+1].x,
+				rot_points[(i==length-1)?0:i+1].y,
 				makecol(0, 255, 0));
 			triangle(buffer,
-				(pos + rot_points[i]).x,
-				(pos + rot_points[i]).y,
-				(pos + rot_points[(i==length-1)?0:i+1]).x,
-				(pos + rot_points[(i==length-1)?0:i+1]).y,
+				rot_points[i].x,
+				rot_points[i].y,
+				rot_points[(i==length-1)?0:i+1].x,
+				rot_points[(i==length-1)?0:i+1].y,
 				pos.x,
 				pos.y,
 				makecol(0, 255, 0));

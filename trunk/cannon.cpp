@@ -18,10 +18,9 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(20,  2));
 		points.push_back(Vector(20, -2));
 		points.push_back(Vector(-5, -2));
-		//angle = -(PI/2);
-		angle = 0;
 		shots = Shots;
 		update_angles();
+		angle = 2*(PI/2);
 	}
 	
 	cannon() {
@@ -30,8 +29,8 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(20,  2));
 		points.push_back(Vector(20, -2));
 		points.push_back(Vector(-5, -2));
-		angle = -(PI/2);
 		update_angles();
+		angle = 2*(PI/2);
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -49,19 +48,13 @@ class cannon : virtual public top_view_object, virtual public angular {
 	
 	void draw_bounding_box(BITMAP * buffer) {
 		int length = (int)points.size();
-		std::vector<Vector> rot_points = ang_points();
+		std::vector<Vector> rot_points = abs_points();
 		for (int i = 0; i < length; ++i) {
-			line(buffer,
-				(pos + rot_points[i]).x,
-				(pos + rot_points[i]).y,
-				(pos + rot_points[(i==length-1)?0:i+1]).x,
-				(pos + rot_points[(i==length-1)?0:i+1]).y,
-				makecol(0, 0, 255));
 			triangle(buffer,
-				(pos + rot_points[i]).x,
-				(pos + rot_points[i]).y,
-				(pos + rot_points[(i==length-1)?0:i+1]).x,
-				(pos + rot_points[(i==length-1)?0:i+1]).y,
+				rot_points[i].x,
+				rot_points[i].y,
+				rot_points[(i==length-1)?0:i+1].x,
+				rot_points[(i==length-1)?0:i+1].y,
 				pos.x,
 				pos.y,
 				makecol(0, 0, 255));
@@ -69,6 +62,6 @@ class cannon : virtual public top_view_object, virtual public angular {
 	}
 	
 	virtual void shoot(int Index) {
-		shots->push_back(default_shot(pos, angle, Index));
+		shots->push_back(mini_shot(pos, angle, Index));
 	}
 };

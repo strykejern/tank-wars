@@ -2,13 +2,14 @@
 #include <vector>
 
 #define PI 3.14159265358979323846264338327950288419716f
-#define SCREEN_X 640
-#define SCREEN_Y 480
+#define SCREEN_X 950
+#define SCREEN_Y 540
 
 PALETTE palette;
 
 #include "vector.cpp"
 #include "timer_class.cpp"
+#include "health_class.cpp"
 #include "basic_physics_object.cpp"
 #include "top_view_object.cpp"
 #include "angular.cpp"
@@ -17,6 +18,7 @@ PALETTE palette;
 #include "shot.cpp"
 #include "default_shot.cpp"
 #include "cannon.cpp"
+#include "cannons.cpp"
 #include "obstruction.cpp"
 #include "default_obstruction.cpp"
 #include "tanks.cpp"
@@ -37,6 +39,7 @@ int main() {
 	allegro_init();
 	install_timer();
 	install_keyboard();
+	install_mouse();
 	
 	LOCK_VARIABLE(speed_counter);
     LOCK_FUNCTION(increment_speed_counter);
@@ -65,7 +68,7 @@ int main() {
     
     //srand((int)&tmp_points);
     for (int i = 0; i < 10; ++i) { 
-    	game.add_obstruction(default_obstruction(Vector(rand()%600, rand()%400)));
+    	game.add_obstruction(default_obstruction(Vector(rand()%SCREEN_X, rand()%SCREEN_Y)));
 	}
     
     while (!key[KEY_ESC]) {
@@ -77,6 +80,7 @@ int main() {
 		//drawing goes here
 		game.draw(buffer);
 		if (key[KEY_F5]) save_bitmap("screenshot.bmp", buffer, palette);
+		circle(buffer, mouse_x, mouse_y, 2, makecol(0, 255, 255));
 		blit(buffer, screen, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
         clear_to_color(buffer, makecol(25, 25, 25));
 
