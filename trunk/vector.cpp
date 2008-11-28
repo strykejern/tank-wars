@@ -47,10 +47,7 @@ class Vector {
 		return (x * v.x) + (y * v.y);
 	}
 	Vector operator -  ()         {
-		Vector temp;
-		temp.x = -x;
-		temp.y = -y;
-		return temp;
+		return Vector(-x, -y);
 	}
 	bool   operator != (Vector v) {
 		return x!=v.x || y!=v.y;
