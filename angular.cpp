@@ -24,13 +24,11 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	
 	angular() {
 		angle = 0;
-		update_angles();
 		fixed_rot = false;
 	}
 	angular(bool fixed) {
 		angle = 0;
 		fixed_rot = fixed;
-		if (!fixed) update_angles();
 	}
 	
 	void update_angles() {
@@ -49,36 +47,53 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 		}
 	}
 	
-	void add_point(Vector pnt) {
-		points.push_back(pnt);
-		update_angles();
-	}
-	
 	std::vector<Vector> abs_points() {
+		int length = (int)points.size();
+		std::vector<Vector> tmp_points ;
 		if (fixed_rot) {
-			return points;
+			for (int i = 0; i < length; ++i) {
+				tmp_points.push_back(pos + points[i]);
+			}
 		}
 		else {
-			int length = (int)points.size();
-			std::vector<Vector> tmp_points ;
 			for (int i = 0; i < length; ++i) {
 				tmp_points.push_back(pos + Vector(lengths[i], angle + angles[i], 0));
 			}
-			return tmp_points;
 		}
+		return tmp_points;
+	}
+	
+	std::vector<Vector> ang_points() {
+		int length = (int)points.size();
+		std::vector<Vector> tmp_points;
+		for (int i = 0; i < length; ++i)
+			tmp_points.push_back(Vector(lengths[i], angle + angles[i], 0));
+		return tmp_points;
 	}
 	
 	std::vector<float> project_to(Vector v) {
 		int length = (int)points.size();
-		std::vector<Vector> rot_points = abs_points();
 		std::vector<float> border;
-		border.push_back(rot_points[0] * v);
-		border.push_back(rot_points[0] * v);
-		for (int i = 1; i < length; ++i) {
-			float tmp = rot_points[i] * v;
-			if (tmp < border[0]) border[0] = tmp;
-			else if(tmp > border[1]) border[1] = tmp;
+		if (fixed_rot) {
+			border.push_back((pos+points[0]) * v);
+			border.push_back((pos+points[0]) * v);
+			for (int i = 1; i < length; ++i) {
+				float tmp = (pos+points[i]) * v;
+				if (tmp < border[0]) border[0] = tmp;
+				else if(tmp > border[1]) border[1] = tmp;
+			}
 		}
+		else {
+			std::vector<Vector> rot_points = abs_points();
+			border.push_back(rot_points[0] * v);
+			border.push_back(rot_points[0] * v);
+			for (int i = 1; i < length; ++i) {
+				float tmp = rot_points[i] * v;
+				if (tmp < border[0]) border[0] = tmp;
+				else if(tmp > border[1]) border[1] = tmp;
+			}
+		}
+		
 		return border;
 	}
 	

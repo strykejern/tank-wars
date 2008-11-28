@@ -67,7 +67,7 @@ int main() {
     game.set_collision_vectors(collision_vectors);
     
     //srand((int)&tmp_points);
-    for (int i = 0; i < 10; ++i) { 
+    for (int i = 0; i < 0; ++i) { 
     	game.add_obstruction(default_obstruction(Vector(rand()%SCREEN_X, rand()%SCREEN_Y)));
 	}
     
@@ -80,7 +80,8 @@ int main() {
 		//drawing goes here
 		game.draw(buffer);
 		if (key[KEY_F5]) save_bitmap("screenshot.bmp", buffer, palette);
-		circle(buffer, mouse_x, mouse_y, 2, makecol(0, 255, 255));
+		circle(buffer, mouse_x, mouse_y, 3, makecol(0, 255, 255));
+		
 		blit(buffer, screen, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
         clear_to_color(buffer, makecol(25, 25, 25));
 

@@ -34,29 +34,30 @@ class tanks_game {
 		}
 		for (int i = 0; i < (int)tanks.size(); ++i) {
 			for (int x = i+1; x < (int)tanks.size(); ++x)
-				if(collision_check(tanks[i], tanks[x])) 
+				if(collision_check(&tanks[i], &tanks[x])) 
 					collision(&tanks[i], &tanks[x]);
 					
 			for (int x = 0; x < (int)obstructions.size(); ++x)
-				if(collision_check(tanks[i], obstructions[x]))
+				if(collision_check(&tanks[i], &obstructions[x]))
 					collision(&tanks[i], obstructions[x]);
 					
 			for (int x = 0; x < (int)shots.size(); ++x)
 				if (i != shots[x].parent)
-					if(collision_check(tanks[i], shots[x])) {
+					if(collision_check(&tanks[i], &shots[x])) {
 						collision(&tanks[i], shots[x]);
 						shots.erase(shots.begin()+x--);
 					}
 		}
 		for (int i = 0; i < (int)obstructions.size(); ++i) {
 			for (int x = 0; x < (int)shots.size(); ++x)
-				if(collision_check(obstructions[i], shots[x])) {
+				if(collision_check(&obstructions[i], &shots[x])) {
 					collision(obstructions[i], shots[x]);
 					shots.erase(shots.begin()+x--);
 				}
 		}
 		for (int i = 0; i < (int)shots.size(); ++i) {
 			if (shots[i].update()) {
+				collision(&shots[i]);
 				shots.erase(shots.begin()+i--);
 			}
 		}
@@ -79,11 +80,11 @@ class tanks_game {
 		draw_health(buffer, tanks[1].health_int(), Vector(10, 30));
 	}
 	
-	bool collision_check(angular tank1, angular tank2) {
+	bool collision_check(angular * tank1, angular * tank2) {
 		int overlaps = 0;
 		for (int i = 0; i < (int)collision_vectors.size(); ++i) {
-			std::vector<float> tmp1 = tank1.project_to(collision_vectors[i]);
-			std::vector<float> tmp2 = tank2.project_to(collision_vectors[i]);
+			std::vector<float> tmp1 = tank1->project_to(collision_vectors[i]);
+			std::vector<float> tmp2 = tank2->project_to(collision_vectors[i]);
 			if (between(tmp1[0], tmp2[0], tmp2[1]) ||
 				between(tmp1[1], tmp2[0], tmp2[1]) ||
 				between(tmp2[0], tmp1[0], tmp1[1]) ||
@@ -95,10 +96,24 @@ class tanks_game {
 		return false;
 	}
 	
+	bool collision_check(angular * tank1, shot * shots1) {
+		int overlaps = 0;
+		for (int i = 0; i < (int)collision_vectors.size(); ++i) {
+			std::vector<float> tmp1 = tank1->project_to(collision_vectors[i]);
+			float tmp2 = shots1->project_to(collision_vectors[i]);
+			if (between(tmp2, tmp1[0], tmp1[1]) ||
+				between(tmp2, tmp1[0], tmp1[1]))
+					overlaps++;
+		}
+		if (overlaps == (int)collision_vectors.size())
+			return true;
+		return false;
+	}
+	
 	void collision(tank * tanks1, tank * tanks2) {
 		tanks1->collide_drive();
 		tanks2->collide_drive();
-		if (collision_check(*tanks1, *tanks2)) {
+		if (collision_check(tanks1, tanks2)) {
 			tanks1->collide_rotate();
 			tanks2->collide_rotate();
 		}
@@ -106,18 +121,22 @@ class tanks_game {
 	
 	void collision(tank * tanks1, obstruction obs) {
 		tanks1->collide_drive();
-		if (collision_check(*tanks1, obs)) {
+		if (collision_check(tanks1, &obs)) {
 			tanks1->collide_rotate();
 		}
 	}
 	
 	void collision(tank * tanks1, shot shots1) {
-		explosions.push_back(default_explosion(shots1.get_contact_point()));
+		explosions.push_back(default_explosion(shots1.pos));
 		tanks1->damage(shots1.damage);
 	}
 	
 	void collision(obstruction obstructions1, shot shots1) {
-		explosions.push_back(default_explosion(shots1.get_contact_point()));
+		explosions.push_back(default_explosion(shots1.pos));
+	}
+	
+	void collision(shot * shots1) {
+		explosions.push_back(default_explosion(shots1->pos));
 	}
 	
 	bool between (float x, float min, float max) {
