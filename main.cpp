@@ -2,8 +2,8 @@
 #include <vector>
 
 #define PI 3.14159265358979323846264338327950288419716f
-#define SCREEN_X 950
-#define SCREEN_Y 540
+#define SCREEN_X 710
+#define SCREEN_Y 520
 
 PALETTE palette;
 
@@ -53,15 +53,16 @@ int main() {
     BITMAP * buffer = create_bitmap(SCREEN_X, SCREEN_Y);
     
     std::vector<Vector> collision_vectors;
-	for (int i = 0; i < 15; ++i) {
-		collision_vectors.push_back(Vector(1.0f, 10.0f*i, 0));
+	for (int i = 0; i < 7; ++i) {
+		collision_vectors.push_back(Vector(1.0f, 20.0f*i, 0));
 	}
     
-    tanks_game game;
-    game.add_tank(ove_tank(Vector(200, 200)));
+    tanks_game game (load_bitmap("img/bg.bmp", palette), load_bitmap("img/bg_collision.bmp", palette));
+    
+    game.add_tank(ove_tank(Vector(40, 40)));
     game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS], &key[KEY_N], &key[KEY_M]);
     
-    game.add_tank(ove_tank(Vector(100, 100)));
+    game.add_tank(ove_tank(Vector(650, 50)));
     game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_F], &key[KEY_G], &key[KEY_H]);
     
     game.set_collision_vectors(collision_vectors);

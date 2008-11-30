@@ -1,18 +1,25 @@
 class tanks_game {
 	public:
 	std::vector<tank> tanks;
-	std::vector<obstruction> obstructions;
 	std::vector<shot> shots;
 	std::vector<explosion> explosions;
 	
 	std::vector<Vector> collision_vectors;
 	
+	BITMAP * bg;
+	BITMAP * bg_collision;
+	
 	tanks_game() {
-		
+		init_bg_collision();
 	}
 	
-	void add_tank(Vector pos, std::vector<Vector> points) {
-		tanks.push_back(tank(pos, points, &shots));
+	tanks_game(BITMAP * Bg, BITMAP * Bg_collision) {
+		bg = Bg;
+		bg_collision = Bg_collision;
+	}
+	
+	void init_bg_collision() {
+		bg_collision = create_bitmap(SCREEN_X, SCREEN_Y);
 	}
 	
 	void add_tank(tank tank1) {
@@ -21,11 +28,21 @@ class tanks_game {
 	}
 	
 	void add_obstruction(Vector pos, std::vector<Vector> points) {
-		obstructions.push_back(obstruction(pos, points));
+		///////////Old//////////
+		//obstructions.push_back(obstruction(pos, points));
+		////////////////////////
+		if (bg_collision == NULL) init_bg_collision();
+		obstruction tmp = obstruction(pos, points);
+		tmp.draw(bg_collision);
+		
 	}
 	
 	void add_obstruction(obstruction obs1) {
-		obstructions.push_back(obs1);
+		///////////Old/////////
+		//obstructions.push_back(obs1);
+		///////////////////////
+		//if (bg_collision == NULL) init_bg_collision();
+		obs1.draw(bg_collision);
 	}
 	
 	void update() {
@@ -33,14 +50,13 @@ class tanks_game {
 			if (tanks[i].alive()) tanks[i].update();
 		}
 		for (int i = 0; i < (int)tanks.size(); ++i) {
+			if (collision_check(&tanks[i]))
+				collision(&tanks[i]);
+			
 			for (int x = i+1; x < (int)tanks.size(); ++x)
 				if(collision_check(&tanks[i], &tanks[x])) 
 					collision(&tanks[i], &tanks[x]);
-					
-			for (int x = 0; x < (int)obstructions.size(); ++x)
-				if(collision_check(&tanks[i], &obstructions[x]))
-					collision(&tanks[i], obstructions[x]);
-					
+			
 			for (int x = 0; x < (int)shots.size(); ++x)
 				if (i != shots[x].parent)
 					if(collision_check(&tanks[i], &shots[x])) {
@@ -48,15 +64,8 @@ class tanks_game {
 						shots.erase(shots.begin()+x--);
 					}
 		}
-		for (int i = 0; i < (int)obstructions.size(); ++i) {
-			for (int x = 0; x < (int)shots.size(); ++x)
-				if(collision_check(&obstructions[i], &shots[x])) {
-					collision(obstructions[i], shots[x]);
-					shots.erase(shots.begin()+x--);
-				}
-		}
 		for (int i = 0; i < (int)shots.size(); ++i) {
-			if (shots[i].update()) {
+			if (shots[i].update() || collision_check(&shots[i])) {
 				collision(&shots[i]);
 				shots.erase(shots.begin()+i--);
 			}
@@ -68,12 +77,11 @@ class tanks_game {
 	}
 	
 	void draw(BITMAP * buffer) {
+		blit(bg, buffer, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
 		for (int i = 0; i < (int)shots.size(); ++i)
 			shots[i].draw(buffer);
 		for (int i = 0; i < (int)tanks.size(); ++i)
 			tanks[i].draw(buffer);
-		for (int i = 0; i < (int)obstructions.size(); ++i)
-			obstructions[i].draw(buffer);
 		for (int i = 0; i < (int)explosions.size(); ++i)
 			explosions[i].draw(buffer);
 		draw_health(buffer, tanks[0].health_int(), Vector(10, 10));
@@ -110,6 +118,18 @@ class tanks_game {
 		return false;
 	}
 	
+	bool collision_check(angular * tank1) {
+		std::vector<Vector> tmp_points = tank1->abs_points();
+		for (int i = 0; i < (int)tmp_points.size(); ++i)
+			if (getpixel(bg_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0))
+				return true;
+		return false;
+	}
+	
+	bool collision_check(shot * shots1) {
+		return getpixel(bg_collision, shots1->pos.x, shots1->pos.y) == makecol(0,255,0);
+	}
+	
 	void collision(tank * tanks1, tank * tanks2) {
 		tanks1->collide_drive();
 		tanks2->collide_drive();
@@ -119,9 +139,9 @@ class tanks_game {
 		}
 	}
 	
-	void collision(tank * tanks1, obstruction obs) {
+	void collision(tank * tanks1) {
 		tanks1->collide_drive();
-		if (collision_check(tanks1, &obs)) {
+		if (collision_check(tanks1)) {
 			tanks1->collide_rotate();
 		}
 	}
@@ -129,10 +149,6 @@ class tanks_game {
 	void collision(tank * tanks1, shot shots1) {
 		explosions.push_back(default_explosion(shots1.pos));
 		tanks1->damage(shots1.damage);
-	}
-	
-	void collision(obstruction obstructions1, shot shots1) {
-		explosions.push_back(default_explosion(shots1.pos));
 	}
 	
 	void collision(shot * shots1) {
