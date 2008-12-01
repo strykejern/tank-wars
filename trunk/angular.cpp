@@ -21,14 +21,17 @@ class angular : virtual public top_view_object, virtual public basic_physics_obj
 	std::vector<float> lengths;
 	bool fixed_rot;
 	BITMAP * image;
+	int last_collision;
 	
 	angular() {
 		angle = 0;
 		fixed_rot = false;
+		last_collision = 0;
 	}
 	angular(bool fixed) {
 		angle = 0;
 		fixed_rot = fixed;
+		last_collision = 0;
 	}
 	
 	void update_angles() {

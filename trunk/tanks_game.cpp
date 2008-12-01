@@ -82,6 +82,7 @@ class tanks_game {
 			if (explosions[i].update())
 				explosions.erase(explosions.begin()+i--);
 		}
+		cannon_to_mouse(&tanks[0]);
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -98,6 +99,10 @@ class tanks_game {
 		}
 		draw_health(buffer, tanks[0].health_int(), Vector(10, 10));
 		draw_health(buffer, tanks[1].health_int(), Vector(10, 30));
+		
+		textprintf_ex(buffer, font, 10, 50, makecol(255, 0, 0), -1, "%f", (Vector(mouse_x, mouse_y) - tanks[0].pos).angle());
+		textprintf_ex(buffer, font, 10, 70, makecol(255, 0, 0), -1, "%f", (tanks[0].pos - Vector(mouse_x, mouse_y)).angle());
+		textprintf_ex(buffer, font, 10, 90, makecol(255, 0, 0), -1, "%f", tanks[0].cannons[0].angle);
 	}
 	
 	bool collision_check(angular * tank1, angular * tank2) {
@@ -145,9 +150,10 @@ class tanks_game {
 		std::vector<Vector> tmp_points = tank1->abs_points();
 		for (int i = 0; i < (int)tmp_points.size(); ++i)
 			if (getpixel(bg_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0) ||
-				getpixel(bld_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0)
-			)
+				getpixel(bld_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0)) {
+				tank1->last_collision = i;
 				return true;
+			}
 		return false;
 	}
 	
@@ -214,5 +220,9 @@ class tanks_game {
         rectfill(buffer, pos.x  , pos.y  , pos.x+101, pos.y+10, makecol(0  ,0,0));
         rectfill(buffer, pos.x+1, pos.y+1, pos.x+((health<=100)?health:100), pos.y+9 , color);
         textprintf_ex(buffer, font, pos.x+40, pos.y+2, makecol(255,255,255), -1, "%i", health);
+	}
+
+	void cannon_to_mouse(tank * tank1) {
+		tank1->cannons[0].angle = -(tank1->pos - Vector(mouse_x, mouse_y)).angle() + (PI/2);
 	}
 };

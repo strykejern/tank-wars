@@ -144,7 +144,21 @@ class tank :
 	
 	void collide_drive() {
 		pos -= speed;
-		speed = Vector();
+		speed *= 0.95f;
+		Vector tmp = points[last_collision];
+		if (tmp.x > 0) {
+			if (tmp.y > 0)
+				angle -= HANDLING * 1.5f;
+			else
+				angle += HANDLING * 1.5f;
+		}
+		else {
+			if (tmp.y > 0) 
+				angle += HANDLING * 1.5f;
+			else
+				angle -= HANDLING * 1.5f;
+		}
+		
 	}
 	
 	void collide_rotate() {
