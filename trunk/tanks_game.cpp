@@ -8,20 +8,19 @@ class tanks_game {
 	
 	BITMAP * bg;
 	BITMAP * bg_collision;
+	BITMAP * bld;
+	BITMAP * bld_collision;
 	
 	tanks_game() {
 		bg = NULL;
 		init_bg_collision();
 	}
 	
-	tanks_game(BITMAP * Bg, BITMAP * Bg_collision) {
+	tanks_game(BITMAP * Bg, BITMAP * Bg_collision, BITMAP * Bld, BITMAP * Bld_collision) {
 		bg = Bg;
 		bg_collision = Bg_collision;
-	}
-	
-	~tanks_game() {
-		if (bg != NULL) destroy_bitmap(bg);
-		if (bg_collision != NULL) destroy_bitmap(bg_collision);
+		bld = Bld;
+		bld_collision = Bld_collision;
 	}
 	
 	void init_bg_collision() {
@@ -77,6 +76,9 @@ class tanks_game {
 			}
 		}
 		for (int i = 0; i < (int)explosions.size(); ++i) {
+			for (int x = 0; x < (int)tanks.size(); ++x)
+				if (collision_check(&tanks[x], &explosions[i]))
+					collision(&tanks[x], &explosions[i]);
 			if (explosions[i].update())
 				explosions.erase(explosions.begin()+i--);
 		}
@@ -84,12 +86,16 @@ class tanks_game {
 	
 	void draw(BITMAP * buffer) {
 		blit(bg, buffer, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
+		draw_sprite(buffer, bld, 0, 0);
 		for (int i = 0; i < (int)shots.size(); ++i)
 			shots[i].draw(buffer);
 		for (int i = 0; i < (int)tanks.size(); ++i)
 			tanks[i].draw(buffer);
-		for (int i = 0; i < (int)explosions.size(); ++i)
+		for (int i = 0; i < (int)explosions.size(); ++i) {
 			explosions[i].draw(buffer);
+			explosions[i].destroy(bld);
+			explosions[i].destroy(bld_collision);
+		}
 		draw_health(buffer, tanks[0].health_int(), Vector(10, 10));
 		draw_health(buffer, tanks[1].health_int(), Vector(10, 30));
 	}
@@ -124,16 +130,35 @@ class tanks_game {
 		return false;
 	}
 	
+	bool collision_check(angular * tank1, explosion * exp1) {
+		/*
+		std::vector<Vector> tmp = tank1->abs_points();
+		for (int i = 0; i < (int)tmp.size(); ++i)
+			if ((exp1->pos - tmp[i]).length() < exp1->radius)
+				return true;
+		return false;
+		*/
+		return (exp1->pos - tank1->pos).length() < exp1->radius;
+	}
+	
 	bool collision_check(angular * tank1) {
 		std::vector<Vector> tmp_points = tank1->abs_points();
 		for (int i = 0; i < (int)tmp_points.size(); ++i)
-			if (getpixel(bg_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0))
+			if (getpixel(bg_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0) ||
+				getpixel(bld_collision, tmp_points[i].x, tmp_points[i].y) == makecol(0,255,0)
+			)
 				return true;
 		return false;
 	}
 	
 	bool collision_check(shot * shots1) {
-		return getpixel(bg_collision, shots1->pos.x, shots1->pos.y) == makecol(0,255,0);
+		if (getpixel(bg_collision , shots1->pos.x - (shots1->speed.x/2), shots1->pos.y - (shots1->speed.y/2)) == makecol(0,255,0) ||
+			getpixel(bld_collision, shots1->pos.x - (shots1->speed.x/2), shots1->pos.y - (shots1->speed.y/2)) == makecol(0,255,0)) {
+			shots1->pos -= shots1->speed / 2;
+			return true;
+		}
+		return getpixel(bg_collision, shots1->pos.x, shots1->pos.y) == makecol(0,255,0) ||
+				getpixel(bld_collision, shots1->pos.x, shots1->pos.y) == makecol(0,255,0);
 	}
 	
 	void collision(tank * tanks1, tank * tanks2) {
@@ -159,6 +184,14 @@ class tanks_game {
 	
 	void collision(shot * shots1) {
 		explosions.push_back(default_explosion(shots1->pos));
+	}
+	
+	void collision(tank * tanks1, explosion  * exp1) {
+		tanks1->damage(exp1->damage/exp1->radius);
+		
+		Vector tmp = (tanks1->pos - exp1->pos);
+		tmp.set_length(tmp.length() - exp1->radius);
+		tanks1->speed -= tmp;
 	}
 	
 	bool between (float x, float min, float max) {

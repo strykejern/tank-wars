@@ -49,7 +49,7 @@ struct shot : virtual public basic_physics_object {
 		circlefill(buffer,
 			pos.x,
 			pos.y,
-			2,
+			10,
 			makecol(0, 0, 255));		
 	}
 	

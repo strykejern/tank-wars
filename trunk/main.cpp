@@ -47,13 +47,13 @@ int main() {
 		collision_vectors.push_back(Vector(1.0f, 20.0f*i, 0));
 	}
     
-    tanks_game game (images[0], images[1]);
+    tanks_game game (images[0], images[1], images[2], images[3]);
     
     game.add_tank(ove_tank(Vector(40, 40)));
-    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS], &key[KEY_N], &key[KEY_M]);
+    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_ENTER], &key[KEY_N], &key[KEY_M]);
     
     game.add_tank(ove_tank(Vector(650, 50)));
-    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_F], &key[KEY_G], &key[KEY_H]);
+    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_LSHIFT], &key[KEY_G], &key[KEY_H]);
     
     game.set_collision_vectors(collision_vectors);
     
@@ -108,8 +108,10 @@ void end() {
 }
 
 void load_bmp() {
-	images.push_back(load_bitmap(	"img/bg.bmp", 				NULL));
-	images.push_back(load_bitmap(	"img/bg_collision.bmp", 	NULL));
-	images.push_back(load_tga(		"img/ove_tank_b.tga", 		NULL));
-	images.push_back(load_tga(		"img/ove_tank_c.tga", 		NULL));
+	images.push_back(load_tga(		"img/bg.tga", 			NULL));
+	images.push_back(load_tga(		"img/bg_c.tga", 		NULL));
+	images.push_back(load_tga(		"img/bld.tga",			NULL));
+	images.push_back(load_tga(		"img/bld_c.tga",		NULL));
+	images.push_back(load_tga(		"img/ove_tank_b.tga", 	NULL));
+	images.push_back(load_tga(		"img/ove_tank_c.tga", 	NULL));
 }
