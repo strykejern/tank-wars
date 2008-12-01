@@ -2,10 +2,10 @@
 #include <vector>
 
 #define PI 3.14159265358979323846264338327950288419716f
-#define SCREEN_X 710
-#define SCREEN_Y 520
+#define SCREEN_X 980
+#define SCREEN_Y 540
 
-PALETTE palette;
+std::vector<BITMAP *> images;
 
 #include "vector.cpp"
 #include "timer_class.cpp"
@@ -33,22 +33,12 @@ void increment_speed_counter() {
 }
 END_OF_FUNCTION(increment_speed_counter);
 
-
+void init();
+void end();
+void load_bmp();
 
 int main() {
-	allegro_init();
-	install_timer();
-	install_keyboard();
-	install_mouse();
-	
-	LOCK_VARIABLE(speed_counter);
-    LOCK_FUNCTION(increment_speed_counter);
-    install_int_ex(increment_speed_counter, BPS_TO_TIMER(30));
-	
-	
-	set_color_depth(32);
-    set_gfx_mode(GFX_AUTODETECT_WINDOWED, SCREEN_X, SCREEN_Y, 0, 0);
-    set_alpha_blender();
+	init();
     
     BITMAP * buffer = create_bitmap(SCREEN_X, SCREEN_Y);
     
@@ -57,7 +47,7 @@ int main() {
 		collision_vectors.push_back(Vector(1.0f, 20.0f*i, 0));
 	}
     
-    tanks_game game (load_bitmap("img/bg.bmp", palette), load_bitmap("img/bg_collision.bmp", palette));
+    tanks_game game (images[0], images[1]);
     
     game.add_tank(ove_tank(Vector(40, 40)));
     game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_MINUS], &key[KEY_N], &key[KEY_M]);
@@ -80,7 +70,7 @@ int main() {
 		}
 		//drawing goes here
 		game.draw(buffer);
-		if (key[KEY_F5]) save_bitmap("screenshot.bmp", buffer, palette);
+		if (key[KEY_F5]) save_bitmap("screenshot.bmp", buffer, NULL);
 		circle(buffer, mouse_x, mouse_y, 3, makecol(0, 255, 255));
 		
 		blit(buffer, screen, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
@@ -88,7 +78,38 @@ int main() {
 
 	}
 	destroy_bitmap(buffer);
+	end();
 	
 	return 0;
 }
 END_OF_MAIN();
+
+void init() {
+	allegro_init();
+	install_timer();
+	install_keyboard();
+	install_mouse();
+	
+	LOCK_VARIABLE(speed_counter);
+    LOCK_FUNCTION(increment_speed_counter);
+    install_int_ex(increment_speed_counter, BPS_TO_TIMER(30));
+	
+	
+	set_color_depth(32);
+    set_gfx_mode(GFX_AUTODETECT_WINDOWED, SCREEN_X, SCREEN_Y, 0, 0);
+    set_alpha_blender();
+    
+    load_bmp();
+}
+
+void end() {
+	for (int i = 0; i < (int)images.size(); ++i)
+		destroy_bitmap(images[i]);
+}
+
+void load_bmp() {
+	images.push_back(load_bitmap(	"img/bg.bmp", 				NULL));
+	images.push_back(load_bitmap(	"img/bg_collision.bmp", 	NULL));
+	images.push_back(load_tga(		"img/ove_tank_b.tga", 		NULL));
+	images.push_back(load_tga(		"img/ove_tank_c.tga", 		NULL));
+}

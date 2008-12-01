@@ -10,12 +10,18 @@ class tanks_game {
 	BITMAP * bg_collision;
 	
 	tanks_game() {
+		bg = NULL;
 		init_bg_collision();
 	}
 	
 	tanks_game(BITMAP * Bg, BITMAP * Bg_collision) {
 		bg = Bg;
 		bg_collision = Bg_collision;
+	}
+	
+	~tanks_game() {
+		if (bg != NULL) destroy_bitmap(bg);
+		if (bg_collision != NULL) destroy_bitmap(bg_collision);
 	}
 	
 	void init_bg_collision() {

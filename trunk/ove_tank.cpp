@@ -1,7 +1,7 @@
 struct ove_tank : public tank {
 	ove_tank(Vector Pos) : tank(Pos) {
 		pos = Pos;
-		image = load_tga("img/ove_tank_b.tga", palette);
+		image = images[2];
 		image_offset = Vector(18, 12);
 		points.push_back(Vector(-18,  12));
 		points.push_back(Vector(-18, -12));
