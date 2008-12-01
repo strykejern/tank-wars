@@ -31,6 +31,7 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(-5, -2));
 		update_angles();
 		angle = 2*(PI/2);
+		image = NULL;
 	}
 	
 	void draw(BITMAP * buffer) {

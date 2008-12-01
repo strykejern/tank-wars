@@ -28,6 +28,7 @@ class tank :
 			input[i] = &dummy;
 		cannons.push_back(cannon(Shots));
 		index = num_tanks++;
+		image = NULL;
 	}
 	tank(Vector Pos) : 
 			top_view_object(Pos), 
@@ -40,18 +41,7 @@ class tank :
 		for (int i = 0; i < 4; ++i)
 			input[i] = &dummy;
 		index = num_tanks++;
-	}
-	tank() : 
-			timer_class(1) {
-		timers.push_back(0);
-		ACCEL = 0.2f;
-		MAX_SPEED = 10;
-		HANDLING = 0.1f;
-		ROT_DEC = 0.95f;
-		volatile char dummy;
-		for (int i = 0; i < 4; ++i)
-			input[i] = &dummy;
-		index = num_tanks++;
+		image = NULL;
 	}
 	
 	void set_shots(std::vector<shot> * Shots) {
