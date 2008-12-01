@@ -20,7 +20,7 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(-5, -2));
 		shots = Shots;
 		update_angles();
-		angle = 2*(PI/2);
+		angle = PI;
 	}
 	
 	cannon() {
@@ -30,7 +30,7 @@ class cannon : virtual public top_view_object, virtual public angular {
 		points.push_back(Vector(20, -2));
 		points.push_back(Vector(-5, -2));
 		update_angles();
-		angle = 2*(PI/2);
+		angle = PI;
 		image = NULL;
 	}
 	

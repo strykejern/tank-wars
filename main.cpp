@@ -49,8 +49,11 @@ int main() {
     
     tanks_game game (images[0], images[1], images[2], images[3]);
     
+    volatile char rot_c = false;
+    volatile char rot_cc = false;
+    
     game.add_tank(ove_tank(Vector(40, 40)));
-    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_ENTER], &key[KEY_N], &key[KEY_M]);
+    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_ENTER], &rot_c, &rot_cc);
     
     game.add_tank(ove_tank(Vector(650, 50)));
     game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_LSHIFT], &key[KEY_G], &key[KEY_H]);
@@ -65,6 +68,7 @@ int main() {
     while (!key[KEY_ESC]) {
         while (speed_counter > 0) {
         	//physics goes here
+        	if (mouse_b & 1) game.tanks[0].cannons[0].shoot(0);
         	game.update();
         	speed_counter--;
 		}
