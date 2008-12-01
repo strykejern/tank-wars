@@ -94,15 +94,14 @@ class tank :
 			accel = Vector(ACCEL, angle, 0);
 		else if (*input[1])
 			accel = -Vector(ACCEL, angle, 0);
-		else if (accel.length() > 0.5f)
-			accel.set_length(accel.length() - 0.01f);
 		else {
 			accel = Vector();
-			speed = Vector();
+			speed *= 0.95f;
+			if (speed.length() <= 0.5f) speed = Vector(0, 0);
 		}
 		
 		if (*input[4])
-			if (zero(0, 5))
+			if (zero(0, 20))
 				for (int i = 0; i < (int)cannons.size(); ++i)
 					cannons[i].shoot(index);
 		if(*input[5])

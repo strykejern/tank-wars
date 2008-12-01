@@ -20,6 +20,10 @@ struct explosion : public timer_class, public basic_game_object {
 		draw_bounding_box(buffer);
 	}
 	
+	void destroy(BITMAP * buffer) {
+		circlefill(buffer, pos.x, pos.y, radius, makecol(255, 0, 255));
+	}
+	
 	void draw_bounding_box(BITMAP * buffer) {
 		circle(buffer, pos.x, pos.y, radius-2, makecol(0, 255, 255));
 		circle(buffer, pos.x, pos.y, radius  , makecol(0, 255, 255));
