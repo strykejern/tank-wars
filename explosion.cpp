@@ -11,7 +11,7 @@ struct explosion : public timer_class, public basic_game_object {
 	
 	bool update() {
 		update_timers();
-		if (radius<max_radius&&zero(0, 1))radius++;
+		if (radius<max_radius&&zero(0, 1))radius+=2;
 		if (radius >= max_radius) return true;
 		return false;
 	}

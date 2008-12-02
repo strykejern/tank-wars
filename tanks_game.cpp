@@ -3,6 +3,7 @@ class tanks_game {
 	std::vector<tank> tanks;
 	std::vector<shot> shots;
 	std::vector<explosion> explosions;
+	std::vector<enemy> enemies;
 	
 	std::vector<Vector> collision_vectors;
 	
@@ -50,6 +51,10 @@ class tanks_game {
 		obs1.draw(bg_collision);
 	}
 	
+	void add_enemy(Vector pos) {
+		enemies.push_back(enemy(pos, &tanks[0].pos, &shots, bg_collision));
+	}
+	
 	void update() {
 		for (int i = 0; i < (int)tanks.size(); ++i) {
 			if (tanks[i].alive()) tanks[i].update();
@@ -82,7 +87,11 @@ class tanks_game {
 			if (explosions[i].update())
 				explosions.erase(explosions.begin()+i--);
 		}
-		cannon_to_mouse(&tanks[0]);
+		for (int i = 0; i < (int)enemies.size(); ++i) {
+			enemies[i].update();
+		}
+		
+		cannon_to_point(&tanks[0], Vector(mouse_x, mouse_y));
 	}
 	
 	void draw(BITMAP * buffer) {
@@ -97,12 +106,15 @@ class tanks_game {
 			explosions[i].destroy(bld);
 			explosions[i].destroy(bld_collision);
 		}
-		draw_health(buffer, tanks[0].health_int(), Vector(10, 10));
-		draw_health(buffer, tanks[1].health_int(), Vector(10, 30));
+		for (int i = 0; i < (int)enemies.size(); ++i)
+			enemies[i].draw(buffer);
 		
-		textprintf_ex(buffer, font, 10, 50, makecol(255, 0, 0), -1, "%f", (Vector(mouse_x, mouse_y) - tanks[0].pos).angle());
-		textprintf_ex(buffer, font, 10, 70, makecol(255, 0, 0), -1, "%f", (tanks[0].pos - Vector(mouse_x, mouse_y)).angle());
-		textprintf_ex(buffer, font, 10, 90, makecol(255, 0, 0), -1, "%f", tanks[0].cannons[0].angle);
+		draw_health(buffer, tanks[0].health_int(), Vector(10, 10));
+		
+		circle(buffer, mouse_x, mouse_y, 6, makecol(255, 0, 0));
+		circle(buffer, mouse_x, mouse_y, 12, makecol(255, 0, 0));
+		line  (buffer, mouse_x - 16, mouse_y, mouse_x + 16, mouse_y, makecol(255, 0, 0));
+		line  (buffer, mouse_x, mouse_y - 16, mouse_x, mouse_y + 16, makecol(255, 0, 0));
 	}
 	
 	bool collision_check(angular * tank1, angular * tank2) {
@@ -196,14 +208,12 @@ class tanks_game {
 		tanks1->damage(exp1->damage/exp1->radius);
 		
 		Vector tmp = (tanks1->pos - exp1->pos);
-		tmp.set_length(tmp.length() - exp1->radius);
+		tmp.set_length(tmp.length() - exp1->radius + 1);
 		tanks1->speed -= tmp;
 	}
 	
 	bool between (float x, float min, float max) {
-		if ((min < x) && (x < max))
-			return true;
-		return false;
+		return (min < x) && (x < max);
 	}
 	
 	void set_collision_vectors(std::vector<Vector> collisions) {
@@ -222,7 +232,7 @@ class tanks_game {
         textprintf_ex(buffer, font, pos.x+40, pos.y+2, makecol(255,255,255), -1, "%i", health);
 	}
 
-	void cannon_to_mouse(tank * tank1) {
-		tank1->cannons[0].angle = -(tank1->pos - Vector(mouse_x, mouse_y)).angle() + (PI/2);
+	void cannon_to_point(tank * tank1, Vector point) {
+		tank1->cannons[0].angle = -(tank1->pos - point).angle() + (PI/2);
 	}
 };

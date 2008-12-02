@@ -8,6 +8,9 @@
 std::vector<BITMAP *> images;
 
 #include "vector.cpp"
+
+bool is_green(BITMAP*, Vector);
+
 #include "timer_class.cpp"
 #include "health_class.cpp"
 #include "basic_physics_object.cpp"
@@ -24,6 +27,7 @@ std::vector<BITMAP *> images;
 #include "tanks.cpp"
 #include "ove_tank.cpp"
 #include "default_tank.cpp"
+#include "enemy.cpp"
 #include "tanks_game.cpp"
 
 volatile long speed_counter = 0;
@@ -49,33 +53,26 @@ int main() {
     
     tanks_game game (images[0], images[1], images[2], images[3]);
     
-    volatile char rot_c = false;
-    volatile char rot_cc = false;
+    volatile char shoot = false;
     
-    game.add_tank(ove_tank(Vector(40, 40)));
-    game.tanks[0].set_inputs(&key[KEY_UP], &key[KEY_DOWN], &key[KEY_LEFT], &key[KEY_RIGHT], &key[KEY_ENTER], &rot_c, &rot_cc);
+    game.add_tank(bodhi_tank(Vector(40, 40)));
+    game.tanks[0].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &shoot, &key[KEY_G], &key[KEY_H]);
     
-    game.add_tank(ove_tank(Vector(650, 50)));
-    game.tanks[1].set_inputs(&key[KEY_W], &key[KEY_S], &key[KEY_A], &key[KEY_D], &key[KEY_LSHIFT], &key[KEY_G], &key[KEY_H]);
+    game.add_enemy(Vector(950, 520));
     
     game.set_collision_vectors(collision_vectors);
-    
-    //srand((int)&tmp_points);
-    for (int i = 0; i < 0; ++i) { 
-    	game.add_obstruction(default_obstruction(Vector(rand()%SCREEN_X, rand()%SCREEN_Y)));
-	}
     
     while (!key[KEY_ESC]) {
         while (speed_counter > 0) {
         	//physics goes here
-        	if (mouse_b & 1) game.tanks[0].cannons[0].shoot(0);
+        	if (mouse_b & 1) shoot = true;
+        	else shoot = false;
         	game.update();
         	speed_counter--;
 		}
 		//drawing goes here
 		game.draw(buffer);
 		if (key[KEY_F5]) save_bitmap("screenshot.bmp", buffer, NULL);
-		circle(buffer, mouse_x, mouse_y, 3, makecol(0, 255, 255));
 		
 		blit(buffer, screen, 0, 0, 0, 0, SCREEN_X, SCREEN_Y);
         clear_to_color(buffer, makecol(25, 25, 25));
@@ -112,10 +109,17 @@ void end() {
 }
 
 void load_bmp() {
-	images.push_back(load_tga(		"img/bg.tga", 			NULL));
-	images.push_back(load_tga(		"img/bg_c.tga", 		NULL));
-	images.push_back(load_tga(		"img/bld.tga",			NULL));
-	images.push_back(load_tga(		"img/bld_c.tga",		NULL));
-	images.push_back(load_tga(		"img/ove_tank_b.tga", 	NULL));
-	images.push_back(load_tga(		"img/ove_tank_c.tga", 	NULL));
+	images.push_back(load_tga(		"img/bg.tga", 			NULL));// 0
+	images.push_back(load_tga(		"img/bg_c.tga", 		NULL));// 1
+	images.push_back(load_tga(		"img/bld.tga",			NULL));// 2
+	images.push_back(load_tga(		"img/bld_c.tga",		NULL));// 3
+	images.push_back(load_tga(		"img/ove_tank_b.tga", 	NULL));// 4
+	images.push_back(load_tga(		"img/ove_tank_c.tga", 	NULL));// 5
+	images.push_back(load_bitmap(	"img/soldat1.bmp", 		NULL));// 6
+	images.push_back(load_tga(		"img/torso.tga", 		NULL));// 7
+	images.push_back(load_tga(		"img/kanon.tga",	 	NULL));// 8
+}
+
+bool is_green(BITMAP* collision, Vector point) {
+	return getpixel(collision, point.x, point.y) == makecol(0,255,0);
 }
